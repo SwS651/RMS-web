@@ -1,8 +1,10 @@
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
-import { useGetIdentity } from "@refinedev/core";
+import { useGetIdentity, useLogout } from "@refinedev/core";
 import {
   Layout as AntdLayout,
   Avatar,
+  Dropdown,
+  Menu,
   Space,
   Switch,
   theme,
@@ -10,6 +12,7 @@ import {
 } from "antd";
 import React, { useContext } from "react";
 import { ColorModeContext } from "../../contexts/color-mode";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -41,6 +44,16 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     headerStyles.top = 0;
     headerStyles.zIndex = 1;
   }
+  const {mutate:logout} = useLogout()
+  const userMenu = (
+    <Menu>
+
+        {/* <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}> */}
+        <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={()=>logout()}>
+            Logout
+        </Menu.Item>
+    </Menu>
+);
 
   return (
     <AntdLayout.Header style={headerStyles}>
@@ -51,10 +64,15 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
           onChange={() => setMode(mode === "light" ? "dark" : "light")}
           defaultChecked={mode === "dark"}
         />
-        <Space style={{ marginLeft: "8px" }} size="middle">
-          {user?.name && <Text strong>{user.name}</Text>}
-          {user?.avatar && <Avatar src={user?.avatar} alt={user?.name} />}
-        </Space>
+          <Dropdown overlay={userMenu} placement="bottomRight">
+            <Space style={{ marginLeft: "8px" }} size="middle">
+                {user?.name && <Text strong>{user.name}</Text>}
+                {user?.avatar && <Avatar src={user?.avatar} alt={user?.name} />}
+            </Space>
+          </Dropdown>
+      
+                 
+               
       </Space>
     </AntdLayout.Header>
   );
